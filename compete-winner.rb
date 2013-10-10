@@ -20,3 +20,11 @@ Twitter.configure do |config|
     configure_twitter(config)
 end
 
+# Find the retweet count
+competitionTweet = Twitter.status(TWEET_ID)
+retweetSum = competitionTweet.retweet_count.to_i
+
+puts "Current retweet count: #{retweetSum}"
+
+# Find the ids of all our followers
+follower_ids = 
