@@ -2,7 +2,6 @@ require 'rubygems'
 require 'bundler/setup'
 
 require 'json'
-require 'tweetstream'
 require 'twitter'
 
 TWEET_ID = 387930173481701376
@@ -12,32 +11,27 @@ def configure_twitter(config)
     secrets = secrets["twitter"]
     config.consumer_key         = secrets["consumer_key"]
     config.consumer_secret      = secrets["consumer_secret"]
-    config.oauth_token          = secrets["access_token"]
-    config.oauth_token_secret   = secrets["access_token_secret"]
+    config.access_token         = secrets["access_token"]
+    config.access_token_secret  = secrets["access_token_secret"]
 end
 
 
-# Configure the 2 required gems
-TweetStream.configure do |config|
+restClient = Twitter::REST::Client.new do |config|
     configure_twitter(config)
-    config.auth_method          = :oauth
 end
 
-Twitter.configure do |config|
+streamingClient = Twitter::Streaming::Client.new do |config|
     configure_twitter(config)
 end
 
 # Find the current retweet count
-competitionTweet = Twitter.status(TWEET_ID)
+competitionTweet = restClient.status(TWEET_ID)
 retweetSum = competitionTweet.retweet_count.to_i
 
 puts "Current retweet count: #{retweetSum}"
 
 
-# Get a streaming client
-client = TweetStream::Client.new
-
-client.userstream do |status|
+streamingClient.user do |status|
     puts status
     if status.retweet?
         if status.retweeted_status == competitionTweet
