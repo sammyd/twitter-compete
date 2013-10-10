@@ -40,3 +40,4 @@ PLATFORMS
 
 DEPENDENCIES
   tweetstream
+  twitter
