@@ -1,5 +1,5 @@
 require 'faye/websocket'
-require 'compete-live'
+require_relative '../compete-live'
 
 module TwitterCompete
     class CompetitionBackend

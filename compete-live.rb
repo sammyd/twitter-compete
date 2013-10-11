@@ -27,7 +27,9 @@ module TwitterCompete
         def collectInitialData
             # Find the current retweet count
             @competitionTweets = []
-            @competitionTweets << restClient.status(tweet_ids.first)
+            @tweet_ids.each do |tweet_id|
+                @competitionTweets << restClient.status(tweet_id)
+            end
             @retweetSum = 0
             @competitionTweets.each { |t| @retweetSum += t.retweet_count.to_i }
         end
