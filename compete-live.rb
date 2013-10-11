@@ -62,12 +62,19 @@ module TwitterCompete
 
         private
         def configure_twitter(config, secrets_path)
-            secrets = JSON.parse ( IO.read(secrets_path) )
-            secrets = secrets["twitter"]
-            config.consumer_key         = secrets["consumer_key"]
-            config.consumer_secret      = secrets["consumer_secret"]
-            config.access_token         = secrets["access_token"]
-            config.access_token_secret  = secrets["access_token_secret"]
+            if(File.exists?(secrets_path))
+                secrets = JSON.parse ( IO.read(secrets_path) )
+                secrets = secrets["twitter"]
+                config.consumer_key         = secrets["consumer_key"]
+                config.consumer_secret      = secrets["consumer_secret"]
+                config.access_token         = secrets["access_token"]
+                config.access_token_secret  = secrets["access_token_secret"]
+            else
+                config.consumer_key         = ENV['TWITTER_CONSUMER_KEY']
+                config.consumer_secret      = ENV['TWITTER_CONSUMER_SECRET']
+                config.access_token         = ENV['TWITTER_ACCESS_TOKEN']
+                config.access_token_secret  = ENV['TWITTER_ACCESS_TOKEN_SECRET']
+            end
         end
     end
 end
