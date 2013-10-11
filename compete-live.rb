@@ -17,10 +17,14 @@ module TwitterCompete
             end
             @callbacks = []
             @retweetSum = 0
+            collectInitialData
         end
 
         def subscribe(&callback)
             @callbacks << callback
+            # Send out the initial info
+            message = { retweet_count: @retweetSum }
+            callback.call(message)
         end
 
         def collectInitialData
@@ -34,11 +38,19 @@ module TwitterCompete
         end
 
         def start
-            collectInitialData
             @streamingClient.user do |status|
+                puts "got a tweet"
                 if status.retweet? and @competitionTweets.include? status.retweeted_status
                     @retweetSum += 1
-                    @callbacks.each { |cb| cb.call(status) }
+                    message = { retweet_count: @retweetSum,
+                                tweet: {
+                                    username: status.user.screen_name,
+                                    text: status.text,
+                                    tweet_time: status.created_at
+                                }
+                              }
+                    puts message
+                    @callbacks.each { |cb| cb.call(message) }
                 end
             end
         end
