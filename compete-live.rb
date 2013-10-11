@@ -39,7 +39,6 @@ module TwitterCompete
 
         def start
             @streamingClient.user do |status|
-                puts "got a tweet"
                 if status.retweet? and @competitionTweets.include? status.retweeted_status
                     @retweetSum += 1
                     message = { retweet_count: @retweetSum,
@@ -53,6 +52,12 @@ module TwitterCompete
                     @callbacks.each { |cb| cb.call(message) }
                 end
             end
+        end
+
+        def current_stats
+            current_user = @restClient.user
+            message = { retweet_count: @retweetSum,
+                        follower_count: current_user.followers_count }
         end
 
         private
