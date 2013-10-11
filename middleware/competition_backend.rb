@@ -10,11 +10,11 @@ module TwitterCompete
             @clients = []
 
             Thread.new do
-                streamer = TweetStreamer.new("secrets.json", [387930173481701376])
+                streamer = RetweetStreamer.new([387930173481701376], "secrets.json")
                 streamer.subscribe do |on|
-                    puts on.user.inspect
                     @clients.each {|ws| ws.send(on.text)}
                 end
+                streamer.start
             end
         end
 

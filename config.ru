@@ -1,5 +1,3 @@
-puts "#{RUBY_VERSION}"
-
 require 'rubygems'
 require 'bundler/setup'
 
