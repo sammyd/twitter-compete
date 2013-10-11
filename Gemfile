@@ -5,5 +5,5 @@ ruby "2.0.0"
 gem 'twitter', "~> 5.0.0.rc1"
 
 gem 'sinatra'
-gem 'faye-websockets'
+gem 'faye-websocket'
 gem 'puma'

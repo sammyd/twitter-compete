@@ -1,4 +1,5 @@
 require 'faye/websocket'
+require 'compete-live'
 
 module TwitterCompete
     class CompetitionBackend
@@ -7,6 +8,14 @@ module TwitterCompete
         def initialize(app)
             @app     = app
             @clients = []
+
+            Thread.new do
+                streamer = TweetStreamer.new("secrets.json", [387930173481701376])
+                streamer.subscribe do |on|
+                    puts on.user.inspect
+                    @clients.each {|ws| ws.send(on.text)}
+                end
+            end
         end
 
         def call(env)
@@ -17,11 +26,6 @@ module TwitterCompete
                 ws.on :open do |event|
                     p [:open, ws.object_id]
                     @clients << ws
-                end
-
-                ws.on :message do |event|
-                    p [:message, event.data]
-                    @clients.each { |client| client.send(event.data) }
                 end
 
                 ws.on :close do |event|

@@ -4,39 +4,53 @@ require 'bundler/setup'
 require 'json'
 require 'twitter'
 
-TWEET_ID = 387930173481701376
+module TwitterCompete
 
-def configure_twitter(config)
-    secrets = JSON.parse ( IO.read("secrets.json") )
-    secrets = secrets["twitter"]
-    config.consumer_key         = secrets["consumer_key"]
-    config.consumer_secret      = secrets["consumer_secret"]
-    config.access_token         = secrets["access_token"]
-    config.access_token_secret  = secrets["access_token_secret"]
-end
+    class RetweetStreamer
+        def initialize(tweet_ids, secrets_path)
+            @tweet_ids = tweet_ids
+            @restClient = Twitter::REST::Client.new do |config|
+                configure_twitter(config, secrets_path)
+            end
+            @streamingClient = Twitter::Streaming::Client.new do |config|
+                configure_twitter(config, secrets_path)
+            end
+            @callbacks = []
+            @retweetSum = 0
+            start
+        end
 
+        def subscribe(&callback)
+            @callbacks << callback
+        end
 
-restClient = Twitter::REST::Client.new do |config|
-    configure_twitter(config)
-end
+        def collectInitialData
+            # Find the current retweet count
+            @competitionTweets = []
+            @competitionTweets << restClient.status(tweet_ids.first)
+            @retweetSum = 0
+            @competitionTweets.each { |t| @retweetSum += t.retweet_count.to_i }
+        end
 
-streamingClient = Twitter::Streaming::Client.new do |config|
-    configure_twitter(config)
-end
+        def start
+            collectInitialData
+            streamingClient.user do |status|
+                if status.retweet? and @competitionTweets.include? status.retweeted_status
+                    @retweetSum += 1
+                    @callbacks.each { |cb| cb.call(status) }
+                end
+            end
+        end
 
-# Find the current retweet count
-competitionTweet = restClient.status(TWEET_ID)
-retweetSum = competitionTweet.retweet_count.to_i
-
-puts "Current retweet count: #{retweetSum}"
-
-
-streamingClient.user do |status|
-    puts status
-    if status.retweet?
-        if status.retweeted_status == competitionTweet
-            retweetSum += 1
-            puts "New competition entry (#{retweetSum})"
+        private
+        def configure_twitter(config, secrets_path)
+            secrets = JSON.parse ( IO.read(secrets_path) )
+            secrets = secrets["twitter"]
+            config.consumer_key         = secrets["consumer_key"]
+            config.consumer_secret      = secrets["consumer_secret"]
+            config.access_token         = secrets["access_token"]
+            config.access_token_secret  = secrets["access_token_secret"]
         end
     end
 end
+
