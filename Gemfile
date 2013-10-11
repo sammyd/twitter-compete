@@ -8,3 +8,4 @@ gem 'twitter', "~> 5.0.0.rc1"
 gem 'sinatra'
 gem 'faye-websocket'
 gem 'puma'
+gem 'haml'

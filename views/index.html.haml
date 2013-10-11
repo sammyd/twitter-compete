@@ -1,0 +1,61 @@
+!!! 5
+%html
+  %head
+    %title= "TwitterCompete Live"
+    %meta{ name: "viewport", content: "width=device-width, initial-scale=1.0" }
+    %link{ rel: "stylesheet", href: "//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"}
+    %link{ rel: "stylesheet", href: "//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css" }
+    %link{ rel: "stylesheet", href: "/css/site.css" }
+
+  %body
+    .jumbotron
+      .container
+        %h1 TwitterCompete Live
+        %p
+          Watch the retweets of the competition tweets, Live!
+
+    .container
+      .col-md-4
+        .number-shoutout
+          .number 12349
+          %h2 Retweets
+
+      .col-md-4
+        .number-shoutout
+          .number 12
+          %h2 Followers
+
+      .col-md-4
+        .number-shoutout
+          .number 1234
+          %h2 Other number
+
+      %hr
+
+      .col-md-6
+        %h2 Retweet Stream
+
+        .tweet
+          .username @iwantmyrealname
+          .tweet-content This will be the same every time boom boom boom
+          .time 12/13/14 12:13:14
+
+        .tweet
+          .username @iwantmyrealname
+          .tweet-content This will be the same every time boom boom boom
+          .time 12/13/14 12:13:14
+
+      .col-md-6
+        %h2 Follower Stream
+
+        .tweet
+          .username @iwantmyrealname
+          .time 12/13/14 12:13:14
+
+        .tweet
+          .username @iwantmyrealname
+          .time 12/13/14 12:13:14
+
+
+    %script{ src: "//code.jquery.com/jquery.js" }
+    %script{ src: "//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js" }
