@@ -1,5 +1,6 @@
 require 'faye/websocket'
-require_relative '../compete-live'
+require_relative '../utilities/retweet-streamer'
+require_relative '../utilities/tweet-list'
 
 COMPETITION_TWEETS=[388653721640767488, 387930173481701376, 388331507225743360,
     387519699548127232, 387240835643097088, 386146014543224833, 385664639218229248,
@@ -14,7 +15,7 @@ module TwitterCompete
         def initialize(app)
             @app     = app
             @clients = []
-            @streamer = RetweetStreamer.new(COMPETITION_TWEETS, "secrets.json")
+            @streamer = RetweetStreamer.new(TweetList.new, "secrets.json")
             @streamer.subscribe do |on|
                 @clients.each do |ws|
                     ws.send(on.to_json)
@@ -34,6 +35,7 @@ module TwitterCompete
                 ws.on :open do |event|
                     p [:open, ws.object_id]
                     @clients << ws
+                    puts @streamer.current_stats
                     ws.send(@streamer.current_stats.to_json)
                 end
 
@@ -52,6 +54,7 @@ module TwitterCompete
                 ws.rack_response
             else
                 # Other call type
+                env[:tweet_streamer] = @streamer 
                 @app.call(env)
             end
         end

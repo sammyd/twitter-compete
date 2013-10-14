@@ -13,38 +13,27 @@
         %h1
           %a{ href: "/"} TwitterCompete Live
         %p
-          Watch the retweets of the competition tweets, Live!
+          Competition tweets
 
     .container
-      .col-md-4
-        .number-shoutout
-          .number#retweet-count -
-          %h2 Retweets
-
-      .col-md-4
-        .number-shoutout
-          .number#follower-count -
-          %h2 Followers
-
-      .col-md-4
-        .number-shoutout
-          .number= @tweet_count
-          %h2 Compo Tweets
-          %a{ href: "/tweets" }edit
-
-      %hr
-
       .col-md-6
-        %h2 Retweet Stream
+        %h2 Tweets Stream
 
         #tweets
+          - @tweet_list.each do |tweet|
+            .tweet
+              .username= tweet.user.screen_name
+              .tweet-content= tweet.text
+              .time= tweet.created_at
+              %a{ href: "/tweets/delete/#{tweet.id}", rel: "nofollow" }delete
 
       .col-md-6
-        %h2 Follower Stream
+        %h2 Add tweet
+        %form{ method: "post" }
+          %input{ type: "text", name: "tweet_id" }
+          %input{ type: "submit", value: "add" }
 
-        #followers
-          %p
-            Follow streams aren't supported yet :(
+        
 
 
     %script{ src: "//code.jquery.com/jquery.js" }

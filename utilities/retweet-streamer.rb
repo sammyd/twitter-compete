@@ -7,11 +7,14 @@ require 'twitter'
 module TwitterCompete
 
     class RetweetStreamer
-        def initialize(tweet_ids, secrets_path)
-            @tweet_ids = tweet_ids
+        attr_accessor :competitionTweets
+
+        def initialize(tweet_list, secrets_path)
+            @tweet_list = tweet_list
             @restClient = Twitter::REST::Client.new do |config|
                 configure_twitter(config, secrets_path)
             end
+            @user = @restClient.user
             @streamingClient = Twitter::Streaming::Client.new do |config|
                 configure_twitter(config, secrets_path)
             end
@@ -30,11 +33,12 @@ module TwitterCompete
         def collectInitialData
             # Find the current retweet count
             @competitionTweets = []
-            @tweet_ids.each do |tweet_id|
+            @tweet_list.tweet_ids.each do |tweet_id|
                 @competitionTweets << @restClient.status(tweet_id)
             end
             @retweetSum = 0
             @competitionTweets.each { |t| @retweetSum += t.retweet_count.to_i }
+            puts @retweetSum
         end
 
         def start
@@ -55,9 +59,22 @@ module TwitterCompete
         end
 
         def current_stats
-            current_user = @restClient.user
             message = { retweet_count: @retweetSum,
-                        follower_count: current_user.followers_count }
+                        follower_count: @user.followers_count }
+        end
+
+        def add_tweet(tweet_id)
+            @tweet_list.add_tweet(tweet_id)
+            new_tweet = @restClient.status(tweet_id)
+            @retweetSum += new_tweet.retweet_count.to_i
+            @competitionTweets << new_tweet
+        end
+
+        def remove_tweet(tweet_id)
+            @tweet_list.remove_tweet(tweet_id)
+            tweet = @restClient.status(tweet_id)
+            @retweetSum -= tweet.retweet_count.to_i
+            @competitionTweets.delete tweet
         end
 
         private

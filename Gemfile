@@ -9,3 +9,5 @@ gem 'sinatra'
 gem 'faye-websocket'
 gem 'puma'
 gem 'haml'
+
+gem 'redis'
