@@ -14,19 +14,20 @@ module TwitterCompete
             @restClient = Twitter::REST::Client.new do |config|
                 configure_twitter(config, secrets_path)
             end
-            @user = @restClient.user
             @streamingClient = Twitter::Streaming::Client.new do |config|
                 configure_twitter(config, secrets_path)
             end
             @callbacks = []
             @retweetSum = 0
+            @follower_count = 0
             collectInitialData
         end
 
         def subscribe(&callback)
             @callbacks << callback
             # Send out the initial info
-            message = { retweet_count: @retweetSum }
+            message = { retweet_count: @retweetSum
+                        follower_count: @follower_count }
             callback.call(message)
         end
 
@@ -38,21 +39,22 @@ module TwitterCompete
             end
             @retweetSum = 0
             @competitionTweets.each { |t| @retweetSum += t.retweet_count.to_i }
-            puts @retweetSum
+            @follower_count = @restClient.user.followers_count
         end
 
         def start
             @streamingClient.user do |status|
                 if status.retweet? and @competitionTweets.include? status.retweeted_status
                     @retweetSum += 1
+                    @follower_count = status.retweeted_status.user.followers_count
                     message = { retweet_count: @retweetSum,
+                                follower_count: @follower_count,
                                 tweet: {
                                     username: status.user.screen_name,
                                     text: status.text,
                                     tweet_time: status.created_at
                                 }
                               }
-                    puts message
                     @callbacks.each { |cb| cb.call(message) }
                 end
             end
@@ -60,7 +62,7 @@ module TwitterCompete
 
         def current_stats
             message = { retweet_count: @retweetSum,
-                        follower_count: @user.followers_count }
+                        follower_count: @follower_count }
         end
 
         def add_tweet(tweet_id)
