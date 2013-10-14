@@ -11,7 +11,7 @@ module TwitterCompete
         def initialize()
             @tweet_ids = Set.new
             if ENV.has_key?('REDISTOGO_URL')
-                @redis = Redis.new(ENV['REDISTOGO_URL'])
+                @redis = Redis.new(url: ENV['REDISTOGO_URL'])
             else
                 @redis = Redis.new
             end
