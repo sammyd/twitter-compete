@@ -1,7 +1,7 @@
 !!! 5
 %html
   %head
-    %title= "TwitterCompete Live"
+    %title= "TweetCompete Live :: Tweets"
     %meta{ name: "viewport", content: "width=device-width, initial-scale=1.0" }
     %link{ rel: "stylesheet", href: "//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"}
     %link{ rel: "stylesheet", href: "//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css" }
@@ -11,13 +11,13 @@
     .jumbotron
       .container
         %h1
-          %a{ href: "/"} TwitterCompete Live
+          %a{ href: "/"} TweetCompete Live
         %p
           Competition tweets
 
     .container
       .col-md-6
-        %h2 Tweets Stream
+        %h2 Competition Tweets
 
         #tweets
           - @tweet_list.each do |tweet|
@@ -34,8 +34,6 @@
           %input{ type: "submit", value: "add" }
 
         
-
-
     %script{ src: "//code.jquery.com/jquery.js" }
     %script{ src: "//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js" }
     %script{ src: "/js/twitter-compete.js" }
