@@ -26,7 +26,7 @@ module TwitterCompete
         def subscribe(&callback)
             @callbacks << callback
             # Send out the initial info
-            message = { retweet_count: @retweetSum
+            message = { retweet_count: @retweetSum,
                         follower_count: @follower_count }
             callback.call(message)
         end
