@@ -35,7 +35,10 @@ module TwitterCompete
             # Find the current retweet count
             @competitionTweets = []
             @tweet_list.tweet_ids.each do |tweet_id|
-                @competitionTweets << @restClient.status(tweet_id)
+                begin
+                    @competitionTweets << @restClient.status(tweet_id)
+                rescue Twitter::Error::NotFound => e
+                end
             end
             @retweetSum = 0
             @competitionTweets.each { |t| @retweetSum += t.retweet_count.to_i }
